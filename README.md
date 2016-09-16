@@ -70,5 +70,44 @@ p.parse("what is 2 + 3")  # Prints: 5
 
 ```
 
+## Example Use case
+Use it with a speach to text library and create custom home automation commands.
+This example requires `speech_recognition`
+`$ pip3 install speech_recognition`
+```python
+import re
+import speech_recognition as sr
+from regex_decorator import Parser
+
+p = Parser()
+
+
+@p.listener('Turn (\w+) (?:my|the)?\s?(.+)', re.IGNORECASE)
+def on(matched_str, action, item):
+    # Some home automation action here
+    print("Turning", action, item)
+
+
+# Try and say:
+#   "Turn on living room lights"
+#   "Turn off the living room lights"
+
+# obtain audio from the microphone
+r = sr.Recognizer()
+with sr.Microphone() as source:
+    print("Say something!")
+    audio = r.listen(source)
+
+# recognize speech using Google Speech Recognition
+try:
+    result = r.recognize_google(audio)
+    print("Google Speech Recognition thinks you said " + result)
+    p.parse(result)
+except sr.UnknownValueError:
+    print("Google Speech Recognition could not understand audio")
+except sr.RequestError as e:
+    print("Could not request results from Google Speech Recognition service; {0}".format(e))
+```
+
 ## Run tests
 Just run the command `pytest` in the root directory (may need to `pip3 install pytest`)
