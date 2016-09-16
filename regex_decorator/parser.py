@@ -1,3 +1,4 @@
+import os
 import re
 import logging
 
@@ -35,6 +36,8 @@ class Parser():
                 matched = re.search(test['regex'], str(test_string))
                 if matched:
                     rdata.append(test['func'](test_string, *matched.groups()))
+                    # Move on to the next test_string
+                    break
 
         if len(rdata) == 0:
             rdata = None
@@ -67,3 +70,35 @@ class Parser():
                         rdata.append(test['func'](test_string, *matched))
 
         return rdata
+
+    def parse_file(self, file_path):
+        """
+        Read in a file and parse each line for the first occurrence of a match
+        """
+        content = self._read_file(file_path)
+        rdata = self.parse(content)
+
+        return rdata
+
+    def parse_file_all(self, file_path):
+        """
+        Read in a file and parse each line for all occurrences of a match
+        """
+        content = self._read_file(file_path)
+        rdata = self.parse_all(content)
+
+        return rdata
+
+    def _read_file(self, file_path):
+        content = ''
+        # Check if file exists
+        if os.path.isfile(file_path) is False:
+            logger.error("File {file} does not exist".format(file=file_path))
+            return content
+
+        with open(file_path) as f:
+            content = f.readlines()
+            # Strip out just the newline char at the end of line
+            content = [l.rstrip('\n') for l in content]
+
+        return content

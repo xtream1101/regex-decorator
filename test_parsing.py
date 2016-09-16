@@ -72,6 +72,22 @@ def test_parse_7():
     assert p.parse(['Foo 1', 'foo 2', 'Foo 3 foo 4']) == ['1', '2', '3']
 
 
+def test_parse_8():
+    """
+    This works as it should, only getting the first result, but test_parse_9() broke it
+    """
+    assert p.parse('The answer is 42 and foo 5') == '42'
+
+
+def test_parse_9():
+    """
+    Bug found, if a string contains something that will match two different regex's it will return both
+    That should not happen
+    Fixed in 0.1.1
+    """
+    assert p.parse(['The answer is 42 and foo 5']) == ['42']
+
+
 #
 # Test p.parse_all()
 #
@@ -94,3 +110,30 @@ def test_parse_all_3():
     return all instances found, from 2 different functions
     """
     assert p.parse_all('The answer is 42 as well as foo 3') == ['42', '3']
+
+
+def test_parse_all_4():
+    """
+    return all instances found, from 2 different functions
+    """
+    assert p.parse_all(['The answer is 42 as well as foo 3']) == ['42', '3']
+
+
+#
+# Test p.parse_file()
+#
+def test_parse_file_1():
+    """
+    return all instances found
+    """
+    assert p.parse_file('test_strings.txt') == ['1', '99', 'Eddy', '44']
+
+
+#
+# Test p.parse_file_all()
+#
+def test_parse_file_all_1():
+    """
+    return all instances found
+    """
+    assert p.parse_file_all('test_strings.txt') == ['1', '99', 'Eddy', '44', '4']
