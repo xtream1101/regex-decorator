@@ -4,22 +4,22 @@ from regex_decorator import Parser
 p = Parser()
 
 
-@p.listener('my name is (\w+)', re.IGNORECASE)
+@p.listener('my name is (\w+)', re.IGNORECASE, parse_with='re')
 def name(matched_str, value):
     return value
 
 
-@p.listener('The answer is (\d+)', re.IGNORECASE)
+@p.listener('The answer is (\d+)', re.IGNORECASE, parse_with='re')
 def answer(matched_str, value):
     return value
 
 
-@p.listener('foo (\d)', re.IGNORECASE)
+@p.listener('foo (\d)', re.IGNORECASE, parse_with='re')
 def foo(matched_str, value):
     return value
 
 
-@p.listener('foo (?P<foo>\w+) bar (?P<bar>\w+)', re.IGNORECASE)
+@p.listener('foo (?P<foo>\w+) bar (?P<bar>\w+)', re.IGNORECASE, parse_with='re')
 def this_that(matched_str, bar, foo):
     """
     Checks that even though the args are reversed, the data is collected correctly
