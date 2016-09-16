@@ -9,6 +9,7 @@ setup(
     author='Eddy Hintze',
     author_email="eddy.hintze@gmail.com",
     url="https://github.com/xtream1101/regex-decorator",
+    license='MIT',
     classifiers=[
         "Programming Language :: Python :: 3",
         "Development Status :: 4 - Beta",
