@@ -36,7 +36,8 @@ class Parser():
 
         return wrapper
 
-    def _call_func(self, func, matched_str, matched_data):
+    @classmethod
+    def _call_func(cls, func, matched_str, matched_data):
         """
         Try and return keyed args if possible
         """
