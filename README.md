@@ -4,5 +4,10 @@ This library allows you to place a decorator on a function which has a regex as 
 
 Referance `test_parsing.py` for some basic examples
 
+## Install
+```
+$ pip3 install regex_decorator
+```
+
 ## Run tests
 Just run the command `pytest` in the root directory (may need to `pip3 install pytest`)
