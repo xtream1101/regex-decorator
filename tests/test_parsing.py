@@ -157,11 +157,12 @@ def test_parse_file_1():
     """
     assert p.parse_file('tests/test_strings.txt') == ['1', '99', 'Eddy', '44']
 
-def test_parse_file_1():
+
+def test_parse_file_2():
     """
     Test when a file does not exist
     """
-    assert p.parse_file('not_a_file.txt') == None
+    assert p.parse_file('not_a_file.txt') is None
 
 
 #
