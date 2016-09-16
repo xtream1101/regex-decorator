@@ -1,5 +1,9 @@
 # Regex Decorator
 
+[![PyPI](https://img.shields.io/pypi/v/regex_decorator.svg)](https://pypi.python.org/pypi/regex_decorator)
+[![PyPI](https://img.shields.io/pypi/l/regex_decorator.svg)](https://pypi.python.org/pypi/regex_decorator)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/ce0745991c4f49a0b9805d4cbeb10d2a)](https://www.codacy.com/app/eddy-hintze/regex-decorator?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=xtream1101/regex-decorator&amp;utm_campaign=Badge_Coverage)
+
 This library allows you to place a decorator on a function which has a regex as an argument. Then when parsing text, if that regex is found it will run the function and optionally return data
 
 
@@ -45,10 +49,13 @@ def foo(matched_str, value):
     return value
 
 
-@p.listener('What is (\d+) \+ (\d+)', re.IGNORECASE)
-def add(matched_str, val1, val2):
+@p.listener('What is (?P<val1>\d+) \+ (?P<val2>\d+)', re.IGNORECASE)
+def add(matched_str, val2, val1):
+    """
+    When using named args in the regex `(?P<name>)`, the order of the args does not matter
+    """
     ans = int(val1) + int(val2)
-    print(ans)
+    print(val1, "+", val2, "=", ans)
 
 
 example1 = p.parse("My name is Eddy, and the answer is 42.")
@@ -64,7 +71,7 @@ example4 = p.parse_file_all('test_strings.txt')
 print(example4)  # Returns: ['1', '99', 'Eddy', '44', '4']
 
 # It does not always have to return something and all action can be completed in the function like so:
-p.parse("what is 2 + 3")  # Prints: 5
+p.parse("what is 2 + 3")  # Prints: 2 + 3 = 5
 
 # Reference here for more examples: https://github.com/xtream1101/regex-decorator/blob/master/test_parsing.py
 
@@ -82,7 +89,7 @@ from regex_decorator import Parser
 p = Parser()
 
 
-@p.listener('Turn (\w+) (?:my|the)?\s?(.+)', re.IGNORECASE)
+@p.listener('Turn (?P<action>\w+) (?:my|the)?\s?(?P<item>.+)', re.IGNORECASE)
 def on(matched_str, action, item):
     # Some home automation action here
     print("Turning", action, item)

@@ -19,6 +19,14 @@ def foo(matched_str, value):
     return value
 
 
+@p.listener('foo (?P<foo>\w+) bar (?P<bar>\w+)', re.IGNORECASE)
+def this_that(matched_str, bar, foo):
+    """
+    Checks that even though the args are reversed, the data is collected correctly
+    """
+    return foo + '-' + bar
+
+
 #
 # Test p.parse()
 #
@@ -88,6 +96,20 @@ def test_parse_9():
     assert p.parse(['The answer is 42 and foo 5']) == ['42']
 
 
+def test_parse_10():
+    """
+    When using named args, order should not matter
+    """
+    assert p.parse("foo this bar that") == 'this-that'
+
+
+def test_parse_11():
+    """
+    When using named args, order should not matter
+    """
+    assert p.parse(["foo this bar that", "foo one bar two"]) == ['this-that', 'one-two']
+
+
 #
 # Test p.parse_all()
 #
@@ -119,6 +141,13 @@ def test_parse_all_4():
     assert p.parse_all(['The answer is 42 as well as foo 3']) == ['42', '3']
 
 
+def test_parse_all_5():
+    """
+    When using named args, order should not matter
+    """
+    assert p.parse_all("foo this bar that as well as foo one bar two") == ['this-that', 'one-two']
+
+
 #
 # Test p.parse_file()
 #
@@ -126,7 +155,13 @@ def test_parse_file_1():
     """
     return all instances found
     """
-    assert p.parse_file('test_strings.txt') == ['1', '99', 'Eddy', '44']
+    assert p.parse_file('tests/test_strings.txt') == ['1', '99', 'Eddy', '44']
+
+def test_parse_file_1():
+    """
+    Test when a file does not exist
+    """
+    assert p.parse_file('not_a_file.txt') == None
 
 
 #
@@ -136,4 +171,4 @@ def test_parse_file_all_1():
     """
     return all instances found
     """
-    assert p.parse_file_all('test_strings.txt') == ['1', '99', 'Eddy', '44', '4']
+    assert p.parse_file_all('tests/test_strings.txt') == ['1', '99', 'Eddy', '44', '4']
