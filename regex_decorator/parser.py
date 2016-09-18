@@ -1,6 +1,7 @@
 import os
-import re
 import logging
+from regex_decorator.with_re import WithRe
+from regex_decorator.with_parse import WithParse
 
 logger = logging.getLogger(__name__)
 
@@ -25,30 +26,24 @@ class Parser():
     def __init__(self):
         self.listeners = []
 
-    def listener(self, match_str, flags=0):
+    def listener(self, match_str, flags=0, parse_using='parse'):
 
         def wrapper(func):
-            self.listeners.append({'regex': re.compile(match_str, flags),
-                                   'func': func
-                                   })
-            logger.info('Registered listener "{func}" to regex "{str}"'.format(func=func.__name__, str=match_str))
+            if parse_using == 're':
+                parse_with = WithRe(match_str, func, flags=flags)
+
+            else:
+                # Default parser
+                parse_with = WithParse(match_str, func)
+
+            self.listeners.append(parse_with)
+            logger.info("Registered listener '{func}' to regex '{str}'"
+                        .format(func=func.__name__, str=match_str))
             return func
 
         return wrapper
 
-    @classmethod
-    def _call_func(cls, func, matched_str, matched_data):
-        """
-        Try and return keyed args if possible
-        """
-        if len(matched_data.groupdict().keys()) != 0:
-            rdata = func(matched_str, **matched_data.groupdict())
-        else:
-            rdata = func(matched_str, *matched_data.groups())
-
-        return rdata
-
-    def _base_parse(self, input_data, re_func=re.search):
+    def _base_parse(self, input_data, find_all=False):
         """
         All of the parsing is done ehre
         """
@@ -60,26 +55,21 @@ class Parser():
         # Check each string that was passed
         for test_string in input_data:
             # Check each listener for a match, if *_all, then always check all, else break after first match
-            for test in self.listeners:
-                logger.debug("Test string '{str}' with regex '{regex}'".format(str=test_string, regex=test['regex']))
-                matched = re_func(test['regex'], str(test_string))
+            for listener in self.listeners:
+                logger.debug("Test string '{str}' with regex '{regex}'"
+                             .format(str=test_string, regex=listener.regex))
 
-                if matched:
-                    if re_func.__name__ == 'search':
-                        # Match on first occurrence then stop
-                        rdata.append(self._call_func(test['func'], test_string, matched))
-                        # Move on to the next test_string if an array was passed
+                matched_data = listener.parse(test_string, find_all=find_all)
+
+                if len(matched_data) != 0:
+                    rdata.extend(matched_data)
+                    if find_all is False:
                         break
-
-                    elif re_func.__name__ == 'finditer' and matched:
-                        # Return every occurrence found in the string
-                        for match in matched:
-                            rdata.append(self._call_func(test['func'], test_string, match))
 
         if len(rdata) == 0:
             rdata = None
 
-        elif isinstance(orig_input, str) and re_func.__name__ == 'search':
+        elif isinstance(orig_input, str) and find_all is False:
             # If a single item was passed in, return a single item to be consistent
             rdata = rdata[0]
 
@@ -90,13 +80,13 @@ class Parser():
         Find the first occurrence in a string
         If a list is passed in then the first occurrence in each item in that list
         """
-        return self._base_parse(input_data)
+        return self._base_parse(input_data, find_all=False)
 
-    def parse_all(self, input_data, re_func=re.search):
+    def parse_all(self, input_data):
         """
         Find all occurrences in a single string or in a list of strings
         """
-        return self._base_parse(input_data, re_func=re.finditer)
+        return self._base_parse(input_data, find_all=True)
 
     def parse_file(self, file_path):
         """
