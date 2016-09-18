@@ -4,7 +4,7 @@ from distutils.core import setup
 setup(
     name='regex_decorator',
     packages=['regex_decorator'],
-    version='0.2.0',
+    version='0.3.0',
     description='Apply a decorator to a function that is triggered by a regex',
     author='Eddy Hintze',
     author_email="eddy.hintze@gmail.com",
@@ -17,5 +17,7 @@ setup(
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Utilities",
-    ]
+    ],
+    install_requires=['parse',
+                      ]
 )

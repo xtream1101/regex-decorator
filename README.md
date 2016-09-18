@@ -14,6 +14,20 @@ $ pip3 install regex_decorator
 
 ## Example
 
+Can use `re` or `parse` in the decorator
+
+Default for `parse_using` is `parse`
+
+`@p.listener('my name is (\w+).', re.IGNORECASE, parse_using='re')`
+
+`@p.listener('my name is (?P<name>\w+).', re.IGNORECASE, parse_using='re')`
+
+`@p.listener('my name is {}.')`
+
+`@p.listener('my name is {name}.')`
+
+Both of the above will match `Eddy` with the input of `my name is Eddy.`
+
 ```python
 # Content of test_strings.txt
 # Foo 1
@@ -34,22 +48,22 @@ logger = logging.getLogger(__name__)
 p = Parser()
 
 
-@p.listener('my name is (\w+)', re.IGNORECASE)
-def name(matched_str, value):
-    return value
+@p.listener('my name is (\w+)', re.IGNORECASE, parse_using='re')
+def name(matched_str, name):
+    return name
 
 
-@p.listener('The answer is (\d+)', re.IGNORECASE)
-def answer(matched_str, value):
-    return value
+@p.listener('The answer is (\d+)', re.IGNORECASE, parse_using='re')
+def answer(matched_str, answer):
+    return answer
 
 
-@p.listener('foo (\d)', re.IGNORECASE)
+@p.listener('foo (\d)', re.IGNORECASE, parse_using='re')
 def foo(matched_str, value):
     return value
 
 
-@p.listener('What is (?P<val1>\d+) \+ (?P<val2>\d+)', re.IGNORECASE)
+@p.listener('What is (?P<val1>\d+) \+ (?P<val2>\d+)', re.IGNORECASE, parse_using='re')
 def add(matched_str, val2, val1):
     """
     When using named args in the regex `(?P<name>)`, the order of the args does not matter
@@ -80,7 +94,9 @@ p.parse("what is 2 + 3")  # Prints: 2 + 3 = 5
 ## Example Use case
 Use it with a speach to text library and create custom home automation commands.
 This example requires `speech_recognition`
+
 `$ pip3 install speech_recognition`
+
 ```python
 import re
 import speech_recognition as sr
