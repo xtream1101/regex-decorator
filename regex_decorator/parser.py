@@ -1,9 +1,7 @@
 import os
-import re
 import logging
 from regex_decorator.with_re import WithRe
 from regex_decorator.with_parse import WithParse
-from pprint import pprint
 
 logger = logging.getLogger(__name__)
 
