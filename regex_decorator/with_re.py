@@ -9,11 +9,11 @@ class WithRe:
         self.text = None
         self.find_all = None
 
-    def _parse_matches(self, results):
+    def _parse_matches(self, results, **kwargs):
         rdata = []
 
         def append_rdata(data):
-            output = self._parse_result(data)
+            output = self._parse_result(data, **kwargs)
             if output is not None:
                 rdata.append(output)
 
@@ -27,18 +27,18 @@ class WithRe:
 
         return rdata
 
-    def _parse_result(self, result):
+    def _parse_result(self, result, **kwargs):
         rdata = None
 
         if result is not None:
             if len(result.groupdict().keys()) != 0:
-                rdata = self.callback(self.text, **result.groupdict())
+                rdata = self.callback(self.text, **result.groupdict(), **kwargs)
             else:
-                rdata = self.callback(self.text, *result.groups())
+                rdata = self.callback(self.text, *result.groups(), **kwargs)
 
         return rdata
 
-    def parse(self, text, find_all=False):
+    def parse(self, text, find_all=False, **kwargs):
         self.text = text
         self.find_all = find_all
 
@@ -49,4 +49,4 @@ class WithRe:
 
         matched = parse_func(self.regex, self.text)
 
-        return self._parse_matches(matched)
+        return self._parse_matches(matched, **kwargs)

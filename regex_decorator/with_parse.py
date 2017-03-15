@@ -9,11 +9,11 @@ class WithParse:
         self.text = None
         self.find_all = None
 
-    def _parse_matches(self, results):
+    def _parse_matches(self, results, **kwargs):
         rdata = []
 
         def append_rdata(data):
-            output = self._parse_result(data)
+            output = self._parse_result(data, **kwargs)
             if output is not None:
                 rdata.append(output)
 
@@ -27,18 +27,18 @@ class WithParse:
 
         return rdata
 
-    def _parse_result(self, result):
+    def _parse_result(self, result, **kwargs):
         rdata = None
 
         if result is not None:
             if len(result.named.keys()) != 0:
-                rdata = self.callback(self.text, **result.named)
+                rdata = self.callback(self.text, **result.named, **kwargs)
             else:
-                rdata = self.callback(self.text, *result.fixed)
+                rdata = self.callback(self.text, *result.fixed, **kwargs)
 
         return rdata
 
-    def parse(self, text, find_all=False):
+    def parse(self, text, find_all=False, **kwargs):
         """
         Return a list, even if empty
         """
@@ -52,4 +52,4 @@ class WithParse:
 
         matches = parse_func(self.text)
 
-        return self._parse_matches(matches)
+        return self._parse_matches(matches, **kwargs)

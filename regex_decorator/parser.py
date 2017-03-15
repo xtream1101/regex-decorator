@@ -43,7 +43,7 @@ class Parser():
 
         return wrapper
 
-    def _base_parse(self, input_data, find_all=False):
+    def _base_parse(self, input_data, find_all=False, **kwargs):
         """
         All of the parsing is done ehre
         """
@@ -59,7 +59,7 @@ class Parser():
                 logger.debug("Test string '{str}' with regex '{regex}'"
                              .format(str=test_string, regex=listener.regex))
 
-                matched_data = listener.parse(test_string, find_all=find_all)
+                matched_data = listener.parse(test_string, find_all=find_all, **kwargs)
 
                 if len(matched_data) != 0:
                     rdata.extend(matched_data)
@@ -75,12 +75,12 @@ class Parser():
 
         return rdata
 
-    def parse(self, input_data):
+    def parse(self, input_data, **kwargs):
         """
         Find the first occurrence in a string
         If a list is passed in then the first occurrence in each item in that list
         """
-        return self._base_parse(input_data, find_all=False)
+        return self._base_parse(input_data, find_all=False, **kwargs)
 
     def parse_all(self, input_data):
         """
